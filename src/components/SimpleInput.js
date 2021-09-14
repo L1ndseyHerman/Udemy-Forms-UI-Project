@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 const SimpleInput = (props) => {
 
@@ -6,18 +6,26 @@ const SimpleInput = (props) => {
   const [enteredName, setEnteredName] = useState('');
   const [enteredNameTouched, setEnteredNameTouched] = useState(false);
 
+  const [enteredEmail, setEnteredEmail] = useState('');
+  const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
+
+  const [formIsValid, setFormIsValid] = useState(false);
+
   const enteredNameIsValid = enteredName.trim() !== '';
   //  Another less-code boolean:
   const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
-  let formIsValid = false;
+  const enteredEmailIsValid = enteredEmail.trim() !== '' && enteredEmail.indexOf('@') !== -1;
+  const emailInputIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
 
   //  If u had other form inputs, should do for enteredAgeIsValid or whatevs in a useEffect().
-    if (enteredNameIsValid) {
-      formIsValid = true;
+  useEffect(() => {
+    if (enteredNameIsValid && enteredEmailIsValid) {
+      setFormIsValid(true);
     } else {
-      formIsValid = false;
+      setFormIsValid(false);
     }
+  }, [enteredNameIsValid, enteredEmailIsValid]);
 
   const nameInputChangeHandler = event => {
     setEnteredName(event.target.value);
@@ -27,26 +35,34 @@ const SimpleInput = (props) => {
     setEnteredNameTouched(true);
   };
 
+  const emailInputChangeHandler = event => {
+    setEnteredEmail(event.target.value);
+  };
+
+  const emailInputBlurHandler = event => {
+    setEnteredEmailTouched(true);
+  };
+
   const formSubmissionHandler = event => {
     event.preventDefault();
 
     setEnteredNameTouched(true);
+    setEnteredEmailTouched(true);
 
-    if (!enteredNameIsValid) {
+    if (!formIsValid) {
       return;
     }
 
-    console.log(enteredName);
-
-    //  This is one place where changing the state every keystroke is better,
-    //  bec shouldn't really modify a ref, just read it.
     setEnteredName('');
     setEnteredNameTouched(false);
-    //  Ng :( Vanilla JS code that manipulates the DOM, when React should manipulate the DOM.
-    //nameInputRef.current.value = '';
+
+    setEnteredEmail('');
+    setEnteredEmailTouched(false);
   };
 
   const nameInputClasses = nameInputIsInvalid ? 'form-control invalid' : 'form-control';
+
+  const emailInputClasses = emailInputIsInvalid ? 'form-control invalid' : 'form-control';
 
   return (
     <form onSubmit={formSubmissionHandler}>
@@ -60,6 +76,17 @@ const SimpleInput = (props) => {
           value={enteredName}
         />
         {nameInputIsInvalid && <p className="error-text">Name must not be empty.</p>}
+      </div>
+      <div className={emailInputClasses}>
+        <label htmlFor='email'>Email</label>
+        <input 
+          type='text' 
+          id='email' 
+          onChange={emailInputChangeHandler} 
+          onBlur={emailInputBlurHandler}
+          value={enteredEmail}
+        />
+        {emailInputIsInvalid && <p className="error-text">Email must not be empty and contain an "@".</p>}
       </div>
       <div className="form-actions">
         <button disabled={!formIsValid}>Submit</button>
