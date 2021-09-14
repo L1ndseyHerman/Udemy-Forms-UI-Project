@@ -15,7 +15,9 @@ const SimpleInput = (props) => {
   //  Another less-code boolean:
   const nameInputIsInvalid = !enteredNameIsValid && enteredNameTouched;
 
-  const enteredEmailIsValid = enteredEmail.trim() !== '' && enteredEmail.indexOf('@') !== -1;
+  //const enteredEmailIsValid = enteredEmail.trim() !== '' && enteredEmail.indexOf('@') !== -1;
+  //  Better way: 
+  const enteredEmailIsValid = enteredEmail.includes('@');
   const emailInputIsInvalid = !enteredEmailIsValid && enteredEmailTouched;
 
   //  If u had other form inputs, should do for enteredAgeIsValid or whatevs in a useEffect().
@@ -78,15 +80,15 @@ const SimpleInput = (props) => {
         {nameInputIsInvalid && <p className="error-text">Name must not be empty.</p>}
       </div>
       <div className={emailInputClasses}>
-        <label htmlFor='email'>Email</label>
+        <label htmlFor='email'>Your E-Mail</label>
         <input 
-          type='text' 
+          type='email' 
           id='email' 
           onChange={emailInputChangeHandler} 
           onBlur={emailInputBlurHandler}
           value={enteredEmail}
         />
-        {emailInputIsInvalid && <p className="error-text">Email must not be empty and contain an "@".</p>}
+        {emailInputIsInvalid && <p className="error-text">Please enter a valid email.</p>}
       </div>
       <div className="form-actions">
         <button disabled={!formIsValid}>Submit</button>
